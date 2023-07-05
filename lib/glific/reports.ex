@@ -86,6 +86,24 @@ defmodule Glific.Reports do
     end)
   end
 
+  def get_kpi_data_new(org_id, table) do
+    presets = get_date_preset()
+      query_data =
+      get_kpi_query_new(presets, table, org_id)
+      |> Repo.query!([]) |> IO.inspect(label: "kpi result")
+
+      process_query_result(query_data.rows) |> Map.new()
+    end
+
+    defp process_query_result(rows) do
+      rows
+      |> Enum.map(fn [date, contacts] ->
+        %{date: date, contacts: contacts}
+      end)
+    end
+
+
+
   defp get_kpi_query(presets, table, org_id) do
     """
     SELECT date_trunc('day', inserted_at) as date,
@@ -95,7 +113,20 @@ defmodule Glific.Reports do
       inserted_at > '#{presets.last_day}'
       AND inserted_at <= '#{presets.today}'
       AND organization_id = #{org_id}
-    GROUP BY date
+    GROUP BY date_trunc('day', inserted_at)
+    """
+  end
+
+  defp get_kpi_query_new(presets, table, org_id) do
+    """
+    SELECT date_trunc('day', inserted_at) as date,
+    COUNT(contacts) as contacts
+    FROM #{table}
+    WHERE
+      inserted_at > '#{presets.last_day}'
+      AND inserted_at <= '#{presets.today}'
+      AND organization_id = #{org_id}
+    GROUP BY date_trunc('day', inserted_at)
     """
   end
 

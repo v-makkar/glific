@@ -49,11 +49,15 @@ defmodule GlificWeb.StatsLive do
       contact_chart_data: %{
         data: fetch_data("contacts"),
         labels: fetch_date_labels("contacts")
-      },
+      } |> IO.inspect(label: "contacts"),
       conversation_chart_data: %{
         data: fetch_data("messages_conversations"),
         labels: fetch_date_labels("messages_conversations")
-      }
+      } |> IO.inspect(label: "conversation"),
+      stats_chart_data: %{
+        data: fetch_data2("stats"),
+        labels: fetch_date_labels2("stats")
+      } |> IO.inspect(label: "stats")
     ]
   end
 
@@ -61,6 +65,16 @@ defmodule GlificWeb.StatsLive do
   defp fetch_data(table_name) do
     Reports.get_kpi_data(1, table_name)
     |> Map.values()
+  end
+
+  defp fetch_data2(table_name) do
+    Reports.get_kpi_data_new(1, table_name)
+    |> Map.values()
+  end
+
+  defp fetch_date_labels2(table_name) do
+    Reports.get_kpi_data_new(1, table_name)
+    |> Map.keys()
   end
 
   @spec fetch_date_labels(String.t()) :: list()

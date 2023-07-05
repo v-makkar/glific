@@ -28,6 +28,28 @@ Hooks.chart = {
   },
 };
 
+Hooks.statsChart = {
+  mounted() {
+    var ctx = this.el.getContext("2d");
+    let label = this.el.dataset.label;
+    let chartData = JSON.parse(this.el.dataset.chartData);
+    var chart = new Chart(ctx, { type: "bar", data: {
+      // date_labels are the default last 7 day dates
+      labels: chartData.labels,
+      datasets: [
+        {
+          label: label,
+          backgroundColor: "rgb(17, 150, 86)",
+          borderColor: "rgb(255, 99, 132)",
+          // data is the data trend in last 7 day
+          data: chartData.data,
+        },
+      ],
+    }, options: {} });
+  }
+}
+
+
 Hooks.dateInput = {
   mounted() {
     flatpickr(this.el, {
